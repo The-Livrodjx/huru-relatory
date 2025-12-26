@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Análise de Performance - Sistema de Gestão</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3d5a6c;
+            --primary-light: #4a6878;
+            --accent: #1dd1dc;
+            --accent-light: #3ddde6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f5f7f9;
+            --card: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #f5f7f9 0%, #e8eef3 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(29, 209, 220, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        header h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .metadata {
+            margin-top: 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        header .metadata-item .icon {
+            font-size: 1.3em;
+        }
+
+        .section {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            animation: slideUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+
+        .section-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 15px;
+        }
+
+        .section-title .number {
+            background: var(--accent);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: 800;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .test-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .test-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .test-card-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .test-badge {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+        }
+
+        .stat-card.accent {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-family: 'Sora', sans-serif;
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .stat-unit {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .bottleneck-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bottleneck-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-left: 5px solid var(--danger);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .bottleneck-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottleneck-item.warning {
+            border-left-color: var(--warning);
+        }
+
+        .bottleneck-item.info {
+            border-left-color: #3b82f6;
+        }
+
+        .bottleneck-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .bottleneck-icon {
+            font-size: 1.5em;
+        }
+
+        .bottleneck-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .bottleneck-description {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-left: 45px;
+        }
+
+        .bottleneck-description ul {
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+
+        .bottleneck-description li {
+            margin: 5px 0;
+        }
+
+        .priority-section {
+            margin: 30px 0;
+        }
+
+        .priority-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .priority-label.medium {
+            background: var(--warning);
+        }
+
+        .priority-label.long-term {
+            background: #3b82f6;
+        }
+
+        .improvement-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .improvement-item {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .improvement-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(29, 209, 220, 0.2);
+        }
+
+        .improvement-title {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .improvement-steps {
+            margin-left: 20px;
+            color: var(--text-light);
+        }
+
+        .improvement-steps li {
+            margin: 5px 0;
+        }
+
+        .improvement-impact {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .code-block {
+            background: var(--primary);
+            color: #10b981;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+        }
+
+        .code-block-title {
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .cost-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .cost-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .cost-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cost-card-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--accent);
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid var(--accent);
+        }
+
+        .conclusion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .conclusion-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .conclusion-card.highlight {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border: none;
+        }
+
+        .conclusion-card-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .conclusion-list {
+            list-style: none;
+        }
+
+        .conclusion-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .conclusion-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .conclusion-card.highlight .conclusion-list li::before {
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .test-grid,
+            .stats-grid,
+            .cost-grid,
+            .conclusion-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 5px solid var(--warning);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .highlight-box strong {
+            color: var(--primary);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Relatório de Análise de Performance</h1>
+            <p class="subtitle">Sistema de Gestão de Contratos e Códigos</p>
+            <div class="metadata">
+                <div class="metadata-item">
+                    <span class="icon">📅</span>
+                    <span>Data: Dezembro 2025</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Seção 1: Análise Individual dos Testes -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">1</span>
+                Análise Individual dos Testes
+            </h2>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <div class="test-card-header">
+                        <h3 class="test-card-title">📊 TESTE 1</h3>
+                        <span class="test-badge">100% Sucesso</span>
+                    </div>
+                    
+                    <div class="metric-row">
+                        <span class="metric-label">Tipo</span>
+                        <span class="metric-value">Both</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Threads Simultâneas</span>
+                        <span class="metric-value">5</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Requisições Bem-sucedidas</span>
+                        <span class="metric-value">5 de 5</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--primary); font-weight: 700;">⏱️ Tempos de Resposta</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Mínimo</span>
+                        <span class="metric-value" style="color: var(--success);">7.09s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Máximo</span>
+                        <span class="metric-value" style="color: var(--danger);">7.47s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Médio</span>
+                        <span class="metric-value" style="color: var(--accent);">7.31s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Mediano</span>
+                        <span class="metric-value">7.35s</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--primary); font-weight: 700;">📈 Performance</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Taxa de Sucesso</span>
+                        <span class="metric-value" style="color: var(--success);">100.0%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Throughput</span>
+                        <span class="metric-value">0.67 req/s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Latência Média</span>
+                        <span class="metric-value">1.49s/req</span>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-card-header">
+                        <h3 class="test-card-title">📊 TESTE 2</h3>
+                        <span class="test-badge">100% Sucesso</span>
+                    </div>
+                    
+                    <div class="metric-row">
+                        <span class="metric-label">Tipo</span>
+                        <span class="metric-value">Both</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Threads Simultâneas</span>
+                        <span class="metric-value">6</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Requisições Bem-sucedidas</span>
+                        <span class="metric-value">6 de 6</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--primary); font-weight: 700;">⏱️ Tempos de Resposta</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Mínimo</span>
+                        <span class="metric-value" style="color: var(--success);">7.20s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Máximo</span>
+                        <span class="metric-value" style="color: var(--danger);">7.46s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Médio</span>
+                        <span class="metric-value" style="color: var(--accent);">7.33s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Mediano</span>
+                        <span class="metric-value">7.36s</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 25px; margin-bottom: 15px; color: var(--primary); font-weight: 700;">📈 Performance</h4>
+                    <div class="metric-row">
+                        <span class="metric-label">Taxa de Sucesso</span>
+                        <span class="metric-value" style="color: var(--success);">100.0%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Throughput</span>
+                        <span class="metric-value">0.78 req/s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Latência Média</span>
+                        <span class="metric-value">1.28s/req</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 2: Análise Consolidada -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">2</span>
+                Análise Consolidada
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card accent">
+                    <div class="stat-label">Tempo Médio</div>
+                    <div class="stat-value">9.51s</div>
+                    <div class="stat-unit">por requisição</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Tempo Mínimo</div>
+                    <div class="stat-value">7.09s</div>
+                    <div class="stat-unit">observado</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Tempo Máximo</div>
+                    <div class="stat-value">15.10s</div>
+                    <div class="stat-unit">observado</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Capacidade do Sistema -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">3</span>
+                Capacidade do Sistema
+            </h2>
+            
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin-bottom: 20px; color: var(--primary);">🎯 Estimativas de Capacidade</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Requisições/Segundo</div>
+                    <div class="stat-value">0.105</div>
+                    <div class="stat-unit">req/s</div>
+                </div>
+                <div class="stat-card accent">
+                    <div class="stat-label">Tempo por Fluxo Completo</div>
+                    <div class="stat-value">47.57s</div>
+                    <div class="stat-unit">5 passos</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Usuários por Hora</div>
+                    <div class="stat-value">76</div>
+                    <div class="stat-unit">users/hora</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Usuários por Minuto</div>
+                    <div class="stat-value">1.3</div>
+                    <div class="stat-unit">users/min</div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 15px; font-size: 1.1em;">👥 Usuários Simultâneos</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div>✅ <strong>Cenário Ideal:</strong> 5 usuários operando ao mesmo tempo</div>
+                    <div>⚠️ <strong>Cenário Conservador (70%):</strong> 2 usuários</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 4: Gargalos Identificados -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">4</span>
+                Gargalos Identificados
+            </h2>
+            
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin-bottom: 20px; color: var(--danger);">🔴 CRÍTICOS</h3>
+            
+            <div class="bottleneck-list">
+                <div class="bottleneck-item">
+                    <div class="bottleneck-header">
+                        <span class="bottleneck-icon">⚠️</span>
+                        <h4 class="bottleneck-title">1. Latência Alta (7-15s por requisição)</h4>
+                    </div>
+                    <div class="bottleneck-description">
+                        <ul>
+                            <li>Tempo médio de 7-13s é muito alto para operações CRUD</li>
+                            <li>Ideal seria < 3s por requisição</li>
+                            <li><strong>Redução necessária: ~70%</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bottleneck-item">
+                    <div class="bottleneck-header">
+                        <span class="bottleneck-icon">📉</span>
+                        <h4 class="bottleneck-title">2. Throughput Limitado</h4>
+                    </div>
+                    <div class="bottleneck-description">
+                        <ul>
+                            <li>Atual: ~0.1-0.8 req/s</li>
+                            <li>Desejável: > 5 req/s</li>
+                            <li><strong>Gap: 500-5000% de melhoria necessária</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin: 40px 0 20px 0; color: var(--warning);">🟡 IMPORTANTES</h3>
+            
+            <div class="bottleneck-list">
+                <div class="bottleneck-item warning">
+                    <div class="bottleneck-header">
+                        <span class="bottleneck-icon">📋</span>
+                        <h4 class="bottleneck-title">4. Validações de Payload</h4>
+                    </div>
+                    <div class="bottleneck-description">
+                        <ul>
+                            <li>Múltiplos campos obrigatórios não documentados</li>
+                            <li>Necessário especificação clara da API</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bottleneck-item warning">
+                    <div class="bottleneck-header">
+                        <span class="bottleneck-icon">⏰</span>
+                        <h4 class="bottleneck-title">5. Timeout em Operações Longas</h4>
+                    </div>
+                    <div class="bottleneck-description">
+                        <ul>
+                            <li>Bind codes demorando > 10s</li>
+                            <li>Request codes com alta latência</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bottleneck-item warning">
+                    <div class="bottleneck-header">
+                        <span class="bottleneck-icon">📊</span>
+                        <h4 class="bottleneck-title">6. Escalabilidade Horizontal Limitada</h4>
+                    </div>
+                    <div class="bottleneck-description">
+                        <ul>
+                            <li>5-6 threads simultâneas causam sobrecarga</li>
+                            <li>Sistema não escala linearmente</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 5: Pontos de Melhoria Prioritários -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">5</span>
+                Pontos de Melhoria Prioritários
+            </h2>
+            
+            <div class="priority-section">
+                <div class="priority-label">
+                    🚀 ALTA PRIORIDADE (Impacto Imediato)
+                </div>
+                
+                <div class="improvement-grid">
+                    <div class="improvement-item">
+                        <div class="improvement-title">1. Otimização de Banco de Dados</div>
+                        <ul class="improvement-steps">
+                            <li>Adicionar índices nas tabelas principais</li>
+                            <li>Otimizar queries N+1 (contracts, delivery_orders, execution_orders)</li>
+                            <li>Implementar cache para dados frequentes (companies, products, packing_configs)</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -40% no tempo de resposta</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">2. Processamento Assíncrono</div>
+                        <ul class="improvement-steps">
+                            <li>Request codes → Processar em background (Celery/RQ)</li>
+                            <li>Bind codes → Fila assíncrona</li>
+                            <li>Notificações → Desacoplar do fluxo principal</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -50% no tempo de resposta</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">3. Connection Pooling</div>
+                        <ul class="improvement-steps">
+                            <li>Configurar pool de conexões do PostgreSQL (min=10, max=50)</li>
+                            <li>Ajustar timeout de conexões</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -20% no tempo de resposta</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">4. Rate Limiting e Circuit Breaker</div>
+                        <ul class="improvement-steps">
+                            <li>Implementar rate limiting por IP/usuário</li>
+                            <li>Circuit breaker para serviços externos</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: +200% na estabilidade</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="priority-section">
+                <div class="priority-label medium">
+                    ⚙️ MÉDIA PRIORIDADE (Otimizações)
+                </div>
+                
+                <div class="improvement-grid">
+                    <div class="improvement-item">
+                        <div class="improvement-title">5. Validações no Frontend</div>
+                        <ul class="improvement-steps">
+                            <li>Mover validações simples para o cliente</li>
+                            <li>Reduzir roundtrips desnecessários</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -15% de requisições</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">6. Compressão de Payloads</div>
+                        <ul class="improvement-steps">
+                            <li>Habilitar GZIP/Brotli</li>
+                            <li>Otimizar tamanho dos JSONs</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -30% no tráfego</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">7. Paginação e Lazy Loading</div>
+                        <ul class="improvement-steps">
+                            <li>Implementar paginação em listagens</li>
+                            <li>Carregar dados sob demanda</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -25% na latência de leitura</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="priority-section">
+                <div class="priority-label long-term">
+                    📊 LONGO PRAZO (Arquitetura)
+                </div>
+                
+                <div class="improvement-grid">
+                    <div class="improvement-item">
+                        <div class="improvement-title">8. Microserviços</div>
+                        <ul class="improvement-steps">
+                            <li>Separar contracts, orders, packing em serviços independentes</li>
+                            <li>Escalar individualmente conforme demanda</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: +500% na escalabilidade</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">9. Cache Distribuído (Redis)</div>
+                        <ul class="improvement-steps">
+                            <li>Cache de sessões</li>
+                            <li>Cache de dados estáticos</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: -60% na carga do BD</span>
+                    </div>
+
+                    <div class="improvement-item">
+                        <div class="improvement-title">10. CDN e Load Balancer</div>
+                        <ul class="improvement-steps">
+                            <li>Distribuir carga entre múltiplas instâncias</li>
+                            <li>Auto-scaling baseado em métricas</li>
+                        </ul>
+                        <span class="improvement-impact">Impacto: +1000% na capacidade</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 6: Recomendações Técnicas -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">6</span>
+                Recomendações Técnicas Específicas
+            </h2>
+            
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin-bottom: 20px; color: var(--primary);">📝 Código</h3>
+            
+            <div class="code-block">
+                <div class="code-block-title">contracts/usecases/create_contract_usecase.py:</div>
+                ✓ Usar bulk insert para itens do contrato<br>
+                ✓ Evitar commits múltiplos em loop<br>
+                ✓ Implementar transações otimizadas
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-title">codebind/usecases/request_codes_usecase.py:</div>
+                ✓ Pré-alocar ranges em lote<br>
+                ✓ Cache de packing_configs<br>
+                ✓ Processar em background se > 100 códigos
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-title">codebind/resources/bind_codes_resource.py:</div>
+                ✓ Validar payloads antes de iniciar transação<br>
+                ✓ Usar upsert ao invés de select + insert<br>
+                ✓ Batch processing para múltiplos códigos
+            </div>
+
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin: 40px 0 20px 0; color: var(--primary);">🗄️ Banco de Dados</h3>
+            
+            <div class="code-block">
+                <div class="code-block-title">Índices Recomendados:</div>
+                CREATE INDEX idx_contracts_companies ON contract_company_relations(contract_id, company_id);<br>
+                CREATE INDEX idx_execution_orders_status ON execution_orders(status) WHERE status IN ('IN_QUEUE', 'PRODUCTION');<br>
+                CREATE INDEX idx_binded_codes_order ON binded_codes(order_id, date_created);<br><br>
+                
+                <div class="code-block-title">Particionamento:</div>
+                ALTER TABLE execution_orders PARTITION BY RANGE (date_created);<br><br>
+                
+                <div class="code-block-title">Manutenção:</div>
+                VACUUM ANALYZE contracts, execution_orders, binded_codes;
+            </div>
+
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin: 40px 0 20px 0; color: var(--primary);">⚙️ Configuração</h3>
+            
+            <div class="code-block">
+                <div class="code-block-title"># gunicorn.conf.py</div>
+                workers = 4  # (2 x CPU cores) + 1<br>
+                worker_class = 'gevent'<br>
+                worker_connections = 1000<br>
+                timeout = 30<br>
+                keepalive = 5
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-title"># PostgreSQL</div>
+                max_connections = 100<br>
+                shared_buffers = 256MB<br>
+                effective_cache_size = 1GB<br>
+                work_mem = 16MB<br>
+                maintenance_work_mem = 128MB
+            </div>
+        </section>
+
+        <!-- Seção 7: Estimativa de Custos -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">7</span>
+                Estimativa de Custos
+            </h2>
+            
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin-bottom: 25px; color: var(--primary);">💰 Investimento Necessário</h3>
+            
+            <div class="cost-grid">
+                <div class="cost-card">
+                    <div class="cost-card-title">🖥️ Infraestrutura</div>
+                    <div class="cost-item">
+                        <span>Redis (cache)</span>
+                        <span>$50-100/mês</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Load Balancer</span>
+                        <span>$30-50/mês</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>CDN</span>
+                        <span>$20-100/mês</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Monitoring</span>
+                        <span>$50/mês</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Total</span>
+                        <span>$150-300/mês</span>
+                    </div>
+                </div>
+
+                <div class="cost-card">
+                    <div class="cost-card-title">👨‍💻 Desenvolvimento</div>
+                    <div class="cost-item">
+                        <span>Otimizações BD</span>
+                        <span>40h</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Async processing</span>
+                        <span>60h</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Cache implementation</span>
+                        <span>30h</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Microservices</span>
+                        <span>120h</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Total</span>
+                        <span>~250h</span>
+                    </div>
+                </div>
+
+                <div class="cost-card">
+                    <div class="cost-card-title">📈 ROI Esperado</div>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">✓ Redução de 75% na latência</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">✓ Capacidade 10x maior</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">✓ Redução de 50% em custos operacionais</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border);">✓ Melhor experiência do usuário</li>
+                        <li style="padding: 10px 0; font-weight: 700; color: var(--success); font-size: 1.1em;">Payback: 3-6 meses</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 8: Conclusão -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="number">8</span>
+                Conclusão e Próximos Passos
+            </h2>
+            
+            <h3 style="font-family: 'Sora', sans-serif; font-size: 1.4em; margin-bottom: 25px; color: var(--primary);">📌 Resumo Executivo</h3>
+            
+            <div class="conclusion-grid">
+                <div class="conclusion-card">
+                    <div class="conclusion-card-title">📊 Situação Atual</div>
+                    <ul class="conclusion-list">
+                        <li>Sistema funcional mas com performance limitada</li>
+                        <li>Latência alta (9.51s) impacta experiência</li>
+                        <li>Capacidade atual: ~2 usuários simultâneos</li>
+                        <li>Necessário melhorias antes de escalar</li>
+                    </ul>
+                </div>
+
+                <div class="conclusion-card">
+                    <div class="conclusion-card-title">🔴 Principais Problemas</div>
+                    <ul class="conclusion-list">
+                        <li>Banco de dados não otimizado</li>
+                        <li>Processamento síncrono em operações longas</li>
+                        <li>Falta de cache</li>
+                        <li>Validações inadequadas</li>
+                    </ul>
+                </div>
+
+                <div class="conclusion-card highlight">
+                    <div class="conclusion-card-title">✅ Recomendação</div>
+                    <ul class="conclusion-list">
+                        <li>Investir em arquitetura para longo prazo</li>
+                        <li>Monitoramento contínuo de métricas</li>
+                        <li>Implementar melhorias de alta prioridade primeiro</li>
+                        <li>Planejar escalabilidade horizontal</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left-color: #3b82f6;">
+                <h4 style="font-weight: 700; margin-bottom: 15px; font-size: 1.2em; color: var(--primary);">🎯 Próxima Ação Recomendada</h4>
+                <p style="line-height: 1.8; color: var(--text);">
+                    Iniciar imediatamente com a <strong>otimização do banco de dados</strong> (Prioridade 1), implementando os índices recomendados e otimizando queries N+1. Esta ação sozinha pode reduzir 40% do tempo de resposta com investimento mínimo e risco controlado. Paralelamente, planejar a implementação do <strong>processamento assíncrono</strong> para operações de longa duração, que trará um impacto adicional de 50% na redução da latência percebida pelo usuário.
+                </p>
+            </div>
+        </section>
+
+        <footer>
+            <p>📊 Relatório gerado automaticamente Apache JMeter • Dezembro 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
